@@ -323,11 +323,11 @@ app.get('/parents/:parentId', async (req, res) => {
   }
 });
 
+const port = process.env.PORT || 3000; // Using port provided by Vercel or default to 3000
 
+app.listen(port, () => {
+    console.log(`Server is now listening at port ${port}`);
+});
 
-
-app.listen(3000, ()=>{
-    console.log("Server is now listening at port 3000");
-})
 
 client.connect();
