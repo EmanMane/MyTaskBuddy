@@ -3,12 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-app.use(bodyParser.json())
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
+app.use(bodyParser.json());
 app.use(cors());
 
 
@@ -44,7 +39,7 @@ app.post('/users/login', async (req, res) => {
       console.error(err);
       res.status(500).json({ message: 'An error occurred' });
     }
-  });
+});
 
 app.post('/users/register', async(req,res) => {
   try{
@@ -323,11 +318,6 @@ app.get('/parents/:parentId', async (req, res) => {
   }
 });
 
-const port = process.env.PORT || 3000; // Using port provided by Vercel or default to 3000
-
-app.listen(port, () => {
-    console.log(`Server is now listening at port ${port}`);
-});
-
-
 client.connect();
+
+module.exports = app;
