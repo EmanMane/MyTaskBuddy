@@ -13,7 +13,7 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
       // Get the current timestamp
       const userEndTime = new Date().toLocaleString('bs-BA');
 
-      await fetch(`http://10.0.2.2:3000/tasks/${taskId}/update-status`, {
+      await fetch(`https://my-task-buddy-nu.vercel.app/tasks/${taskId}/update-status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
         body: JSON.stringify({ status }),
       });
       // Make a request to your API to update userEndTime
-      await fetch(`http://10.0.2.2:3000/tasks/${taskId}/update-userEndTime`, {
+      await fetch(`https://my-task-buddy-nu.vercel.app/tasks/${taskId}/update-userEndTime`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
       const completedSteps = steps.filter((step) => step.status === 1);
       const progress = ((completedSteps.length + 1) / steps.length )*100;
 
-      await fetch(`http://10.0.2.2:3000/tasks/update-progress/${taskId}`, {
+      await fetch(`https://my-task-buddy-nu.vercel.app/tasks/update-progress/${taskId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
 
   const updateStepStatus = useCallback(async (stepId) => {
     try {
-      const response = await fetch('http://10.0.2.2:3000/substeps/update-step', {
+      const response = await fetch('https://my-task-buddy-nu.vercel.app/substeps/update-step', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
   useEffect(() => {
     const fetchSubsteps = async (taskId) => {
       try {
-        const response = await fetch(`http://10.0.2.2:3000/substeps/${taskId}`);
+        const response = await fetch(`https://my-task-buddy-nu.vercel.app/substeps/${taskId}`);
         const data = await response.json();
         const substeps = data.substeps;
 

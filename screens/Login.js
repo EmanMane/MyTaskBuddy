@@ -6,7 +6,6 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import KeyboardAvoidingWrapper from "../components/KeyboardAvoidingWrapper";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const qs = require('qs'); // Import the qs library
 
 
 const { width, height } = Dimensions.get('window');
@@ -21,14 +20,9 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const formData = qs.stringify({ // Serialize the data object to x-www-form-urlencoded format
+      const response = await axios.post('https://my-task-buddy-nu.vercel.app/users/login', {
         username: username,
-        password: password
-      });
-      const response = await axios.post('http://10.0.2.2:3000/users/login', formData, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded' // Set the content type header
-        }
+        password: password,
       });
       if (response.status === 200) {
         // Logged in successfully

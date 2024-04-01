@@ -84,7 +84,7 @@ class Registration extends Component {
     onSubmitSteps = async () => {
         console.log('called on submit step.');
         try {
-            const response = await axios.post('http://10.0.2.2:3000/users/register', {
+            const response = await axios.post('https://my-task-buddy-nu.vercel.app/users/register', {
               firstname:this.state.firstName,
               lastname:this.state.lastName,
               username:this.state.username,

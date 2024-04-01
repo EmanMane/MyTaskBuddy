@@ -30,7 +30,7 @@ const EditProfile = ({navigation}) => {
       const userId = await AsyncStorage.getItem('userId');
 
       // Make a request to your API to fetch details based on the user ID
-      const response = await fetch(`http://10.0.2.2:3000/userdetails?userId=${userId}`);
+      const response = await fetch(`https://my-task-buddy-nu.vercel.app/userdetails?userId=${userId}`);
       const data = await response.json();
 
       console.log(data)
@@ -56,7 +56,7 @@ const EditProfile = ({navigation}) => {
         try {
             // Logged user ID
             const userId = await AsyncStorage.getItem('userId');
-            const response = await axios.put(`http://10.0.2.2:3000/users/${userId}/profile`, {
+            const response = await axios.put(`https://my-task-buddy-nu.vercel.app/users/${userId}/profile`, {
                 username: username,
                 password: password
               });

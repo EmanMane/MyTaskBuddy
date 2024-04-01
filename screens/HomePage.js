@@ -26,7 +26,7 @@ const HomePage = ({ navigation }) => {
       const date = selectedDate.format('YYYY-MM-DD');
 
       // Make a request to your API to fetch tasks based on the user ID
-      const response = await fetch(`http://10.0.2.2:3000/tasks?userId=${userId}&status=${filterStatus}&date=${date}`);
+      const response = await fetch(`https://my-task-buddy-nu.vercel.app/tasks?userId=${userId}&status=${filterStatus}&date=${date}`);
       const data = await response.json();
       // Sort the tasks by startTime in ascending order
       const sortedTasks = data.sort((a, b) => {

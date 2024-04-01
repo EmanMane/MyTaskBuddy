@@ -58,7 +58,7 @@ const Task = ({ route, navigation }) => {
       const userId = await AsyncStorage.getItem('userId');
 
       // Make a request to your API to fetch firstname based on the user ID
-      const response = await fetch(`http://10.0.2.2:3000/users/${userId}/firstname`);
+      const response = await fetch(`https://my-task-buddy-nu.vercel.app/users/${userId}/firstname`);
       const data = await response.json();
 
       if (response.ok) {
@@ -74,7 +74,7 @@ const Task = ({ route, navigation }) => {
   const fetchTaskStatus = async () => {
     try {
       // Make a request to your API to fetch the task status based on the task ID
-      const response = await fetch(`http://10.0.2.2:3000/tasks/${taskId}/status`);
+      const response = await fetch(`https://my-task-buddy-nu.vercel.app/tasks/${taskId}/status`);
       const data = await response.json();
 
       if (response.ok) {
@@ -95,7 +95,7 @@ const Task = ({ route, navigation }) => {
       // Get the current timestamp
       const userStartTime = new Date().toLocaleString('bs-BA');
       // Make a request to your API to update task status
-      await fetch(`http://10.0.2.2:3000/tasks/${taskId}/update-status`, {
+      await fetch(`https://my-task-buddy-nu.vercel.app/tasks/${taskId}/update-status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ const Task = ({ route, navigation }) => {
         body: JSON.stringify({ status: 1}),
       });
       // Make a request to your API to update userStartTime
-      await fetch(`http://10.0.2.2:3000/tasks/${taskId}/update-userStartTime`, {
+      await fetch(`https://my-task-buddy-nu.vercel.app/tasks/${taskId}/update-userStartTime`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const Task = ({ route, navigation }) => {
 
   const fetchParentDetails = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:3000/parents/${parentId}`);
+      const response = await fetch(`https://my-task-buddy-nu.vercel.app/parents/${parentId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch parent details');
       }
