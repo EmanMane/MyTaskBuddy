@@ -1,4 +1,4 @@
-/* import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
 import Login from './screens/Login';
 import Registration from './screens/Registration';
@@ -58,7 +58,7 @@ export default function App() {
   // Initialize database listener when the app starts
 /*   useEffect(() => {
     initDatabaseListener();
-  }, []); *//*
+  }, []); */
   return (
      <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -71,8 +71,8 @@ export default function App() {
     </NavigationContainer> 
   );
 }
- */
-import { StatusBar } from "expo-status-bar";
+ 
+/* import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { usePushNotifications } from "./usePushNotifications";
 
@@ -94,4 +94,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}); */
