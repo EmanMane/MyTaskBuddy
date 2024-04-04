@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "682960359611",
+    "project_id": "mytaskbuddy-499f9",
+    "storage_bucket": "mytaskbuddy-499f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682960359611:android:9d3808cc3dd40ec3b7199e",
+        "android_client_info": {
+          "package_name": "com.etf.unsa.mytaskbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU-pbBoeo7ZksTQCaSKieG6Ko41MWJxrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

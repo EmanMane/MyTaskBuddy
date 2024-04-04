@@ -6,7 +6,63 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
+import 'react-native-url-polyfill/auto'
 
+
+import { createClient } from '@supabase/supabase-js'
+
+/* const supabaseUrl = process.env.SUPABASE_URL
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const changes = supabase
+  .channel('table-filter-changes')
+  .on(
+    'postgres_changes',
+    {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'tasks',
+      filter: 'userId=eq.2',
+    },
+    (payload) => console.log(payload)
+  )
+  .subscribe() */
+
+
+
+// Define webhook endpoint
+app.post('/tasksInsert', (req, res) => {
+  try {
+    // Extract relevant data from the webhook payload
+    const { event, schema, table, payload } = req.body;
+
+    // Check if the event is an INSERT and the table is 'tasks'
+    if (event === 'INSERT' && schema === 'public' && table === 'tasks') {
+      // Extract data about the new task from the payload
+      const { activity, userId } = payload.new;
+
+      // Check if the task is for a specific user (e.g., userId === 2)
+      if (userId === 2) {
+        // Invoke code to send push notification to the user
+        sendPushNotification(activity);
+      }
+    }
+
+    // Respond with success status
+    res.status(200).send('Webhook received successfully.');
+  } catch (error) {
+    console.error('Error handling webhook:', error);
+    // Respond with error status
+    res.status(500).send('Error handling webhook.');
+  }
+});
+
+// Function to send push notification
+function sendPushNotification(activity) {
+  // Your code to send push notification goes here
+  console.log(`Sending push notification for activity: ${activity}`);
+}
 
 app.post('/users/login', async (req, res) => {
     const username = req.body.username;

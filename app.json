@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "my-task-buddy",
-    "slug": "my-task-buddy",
+    "slug": "mytaskbuddy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,13 +18,21 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./android/app/google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.emanmane.mytaskbuddy"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "def939ee-d82d-45d5-a5b6-d0a23be43aa6"
+      }
+    },
+    "owner": "emanmane"
   }
 }

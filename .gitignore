@@ -17,3 +17,6 @@ web-build/
 .metro-health-check*
 .env
 .vercel
+android/
+
+google-services.json
