@@ -9,7 +9,7 @@ app.use(cors());
 import 'react-native-url-polyfill/auto'
 
 
-import { createClient } from '@supabase/supabase-js'
+/* import { createClient } from '@supabase/supabase-js' */
 
 /* const supabaseUrl = process.env.SUPABASE_URL
 const supabaseKey = process.env.SUPABASE_KEY;
