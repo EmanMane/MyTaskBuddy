@@ -32,7 +32,7 @@ const changes = supabase
 
 
 // Define webhook endpoint
-/* app.post('/tasksInsert', (req, res) => {
+app.post('/tasksInsert', (req, res) => {
   try {
     // Extract relevant data from the webhook payload
     const { event, schema, table, payload } = req.body;
@@ -63,7 +63,7 @@ function sendPushNotification(activity) {
   // Your code to send push notification goes here
   console.log(`Sending push notification for activity: ${activity}`);
 }
- */
+ 
 app.post('/users/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
