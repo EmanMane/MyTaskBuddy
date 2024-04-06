@@ -22,12 +22,16 @@ const EditProfile = ({navigation}) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [avatar, setAvatar] = useState('');
+    const [expoPushToken, setExpoPushToken] = useState('');
 
     // Fetch user details
   const fetchUserDetails = async () => {
     try {
       // Logged user ID
       const userId = await AsyncStorage.getItem('userId');
+      const token = await AsyncStorage.getItem('expoPushToken');
+      setExpoPushToken(token);
+      
 
       // Make a request to your API to fetch details based on the user ID
       const response = await fetch(`https://my-task-buddy-nu.vercel.app/userdetails?userId=${userId}`);
@@ -44,10 +48,13 @@ const EditProfile = ({navigation}) => {
     } catch (error) {
       console.error('Error fetching details:', error);
     }
+
+
   };
   useEffect(() => {
     // Fetch details when the component mounts or when the selected date changes
     fetchUserDetails();
+    console.log(expoPushToken);
   }, []);
 
     
@@ -87,7 +94,7 @@ const EditProfile = ({navigation}) => {
           />
         ) : null}
             <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
-          
+            <Text>Your expo push token: {expoPushToken}</Text>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>
                         <Icon name="user" size={width*0.045} color="#2CB237" />  Novo korisničko ime

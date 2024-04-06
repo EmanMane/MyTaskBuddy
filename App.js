@@ -10,7 +10,7 @@ import EditProfile from './screens/EditProfile';
 import { Ionicons } from '@expo/vector-icons';
 import Task from './screens/Task';
 import { initDatabaseListener } from './services/notificationService'; // Import the database listener
-import { usePushNotifications } from './usePushNotifications';
+//import { usePushNotifications } from './usePushNotifications';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

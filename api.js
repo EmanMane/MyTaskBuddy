@@ -178,6 +178,43 @@ app.get('/userdetails', async (req, res) => {
   }
 });
 
+// PUT request to update the current user of device (for expo notifications)
+app.put('/devices/:deviceExpoToken/', async (req, res) => {
+  const { deviceExpoToken } = req.params; // This is the expo_token in db
+  const { userId } = req.body;
+
+  try {
+    // Check if the device exists in the database
+    const existingDevice = await client.query('SELECT * FROM devices WHERE expo_token = $1', [deviceExpoToken]);
+
+    if (existingDevice.rows.length === 0) {
+      // If the device doesn't exist, insert a new row with the expo_token and userId
+      await client.query('INSERT INTO devices (expo_token, userId) VALUES ($1, $2)', [deviceExpoToken, userId]);
+      
+      // Return a success response
+      return res.status(201).json({ message: 'Device created successfully' });
+    }
+
+    // Get the existing device data
+    const device = existingDevice.rows[0];
+
+    // If the userId has changed, update the device with the new userId
+    if (userId !== device.userId) {
+      await client.query('UPDATE devices SET userId = $1 WHERE expo_token = $2', [userId, deviceExpoToken]);
+      
+      // Return a success response
+      return res.status(200).json({ message: 'Device updated successfully' });
+    }
+
+    // If the userId hasn't changed, return a response indicating no changes
+    return res.status(200).json({ message: 'No changes made to the device' });
+  } catch (error) {
+    console.error('Error updating device:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 // PUT request to update the user's profile
 app.put('/users/:userId/profile', async (req, res) => {
   const { userId } = req.params;
@@ -373,6 +410,11 @@ app.get('/parents/:parentId', async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+// Ugasiti prilikom pusha
+app.listen(3000, ()=>{
+  console.log("Server is now listening at port 3000");
+})
 
 client.connect();
 
