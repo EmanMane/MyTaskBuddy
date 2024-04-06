@@ -89,17 +89,17 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('https://my-task-buddy-nu.vercel.app/users/login', {
+      const responseLogin = await axios.post('https://my-task-buddy-nu.vercel.app/users/login', {
         username: username,
         password: password,
       });
-      if (response.status === 200) {
+      if (responseLogin.status === 200) {
         // Logged in successfully
         setMessage('');
         // Extract the user ID from the response
-        const userId = response.data.userId;
-
-        const response = await axios.put(`https://my-task-buddy-nu.vercel.app/devices/${deviceExpoToken}`, {
+        const userId = responseLogin.data.userId;
+        
+        const responseExpo = await axios.put(`https://my-task-buddy-nu.vercel.app/devices/${expoPushToken}`, {
           userId: userId
         });
         
@@ -135,9 +135,7 @@ const Login = ({ navigation }) => {
       setNotification(notification);
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
-    });
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {});
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);

@@ -200,7 +200,7 @@ app.put('/devices/:deviceExpoToken', async (req, res) => {
 
     // If the userId has changed, update the device with the new userId
     if (userId !== device.userId) {
-      await client.query('UPDATE devices SET userId = $1 WHERE expo_token = $2', [userId, deviceExpoToken]);
+      await client.query('UPDATE devices SET "userId" = $1 WHERE expo_token = $2', [userId, deviceExpoToken]);
       
       // Return a success response
       return res.status(200).json({ message: 'Device updated successfully' });
@@ -414,7 +414,7 @@ app.get('/parents/:parentId', async (req, res) => {
 // Ugasiti prilikom pusha
 app.listen(3000, ()=>{
   console.log("Server is now listening at port 3000");
-})
+}) 
 
 client.connect();
 

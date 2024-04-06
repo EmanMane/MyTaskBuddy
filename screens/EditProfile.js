@@ -75,10 +75,22 @@ const EditProfile = ({navigation}) => {
         }
     }
 
-    const handleSwitch = () => {
-        // handle account switch logic
-        navigation.navigate('Login');
-    };
+    const handleSwitch = async () => {
+        try {
+            const userId = AsyncStorage.getItem('userId');
+          // Send a PUT request to update the user's device information with userId set to null
+          await axios.put(`https://my-task-buddy-nu.vercel.app/devices/${expoPushToken}`, {
+            userId: userId
+          });
+      
+          // Navigate to the Login screen
+          navigation.navigate('Login');
+        } catch (error) {
+          // Handle any errors here
+          console.error('Error switching account:', error);
+        }
+      };
+      
 
     return (
         <KeyboardAvoidingWrapper>
@@ -94,7 +106,6 @@ const EditProfile = ({navigation}) => {
           />
         ) : null}
             <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
-            <Text>Your expo push token: {expoPushToken}</Text>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>
                         <Icon name="user" size={width*0.045} color="#2CB237" />  Novo korisničko ime
