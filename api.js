@@ -189,7 +189,7 @@ app.put('/devices/:deviceExpoToken', async (req, res) => {
 
     if (existingDevice.rows.length === 0) {
       // If the device doesn't exist, insert a new row with the expo_token and userId
-      await client.query('INSERT INTO devices (expo_token, userId) VALUES ($1, $2)', [deviceExpoToken, userId]);
+      await client.query('INSERT INTO devices (expo_token, "userId") VALUES ($1, $2)', [deviceExpoToken, userId]);
       
       // Return a success response
       return res.status(201).json({ message: 'Device created successfully' });
