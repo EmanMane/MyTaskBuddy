@@ -32,21 +32,18 @@ const changes = supabase
 
 
 // Define webhook endpoint
-app.post('/tasksInsert', (req, res) => {
+app.post('/tasksInsert', async (req, res) => {
   try {
     // Extract relevant data from the webhook payload
-    const { event, schema, table, payload } = req.body;
+    const { type, table, schema, record } = req.body;
 
     // Check if the event is an INSERT and the table is 'tasks'
-    if (event === 'INSERT' && schema === 'public' && table === 'tasks') {
+    if (type === 'INSERT' && schema === 'public' && table === 'tasks') {
       // Extract data about the new task from the payload
-      const { activity, userId } = payload.new;
+      const { activity, userId } = record;
 
       // Check if the task is for a specific user (e.g., userId === 2)
-      if (userId === 2) {
-        // Invoke code to send push notification to the user
-        sendPushNotification(activity);
-      }
+      await sendPushNotificationToUser(userId, activity);
     }
 
     // Respond with success status
@@ -58,11 +55,87 @@ app.post('/tasksInsert', (req, res) => {
   }
 });
 
-// Function to send push notification
-function sendPushNotification(activity) {
-  // Your code to send push notification goes here
-  console.log(`Sending push notification for activity: ${activity}`);
+
+// Function to send push notification to all devices of a user
+async function sendPushNotificationToUser(userId, activity) {
+  try {
+    // Fetch all expo push tokens associated with the user ID from the database
+    const expoPushTokens = await getExpoPushTokens(userId);
+
+    // Check if any expo push tokens are available
+    if (expoPushTokens.length > 0) {
+      // Construct the message
+      const message = {
+        sound: 'default',
+        title: 'New Task',
+        body: `You have a new task: ${activity}`,
+      };
+
+      // Send the push notification to each expo push token
+      await Promise.all(
+        expoPushTokens.map(async (expoPushToken) => {
+          await sendPushNotification(expoPushToken, message);
+        })
+      );
+    } else {
+      console.log(`Expo push tokens not found for user ${userId}`);
+    }
+  } catch (error) {
+    console.error('Error sending push notification to user:', error);
+  }
 }
+
+// Function to fetch all expo push tokens associated with a user from the database
+async function getExpoPushTokens(userId) {
+  try {
+    // Query the database to fetch all expo push tokens associated with the user ID
+    // Replace this with your actual database query
+    const result = await client.query('SELECT expo_token FROM devices WHERE "userId" = $1', [userId]);
+
+    // Extract expo push tokens from the query result
+    const expoPushTokens = result.rows.map(row => row.expo_token);
+
+    return expoPushTokens;
+  } catch (error) {
+    console.error('Error fetching expo push tokens for user:', error);
+    return [];
+  }
+}
+
+// Function to send push notification
+async function sendPushNotification(expoPushToken, message) {
+  try {
+    // Construct the message with the expo push token
+    const pushMessage = { ...message, to: expoPushToken };
+
+    // Send the push notification
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(pushMessage),
+    });
+  } catch (error) {
+    console.error('Error sending push notification:', error);
+  }
+}
+
+
+// Function to fetch expo push token from the database
+async function getExpoPushToken(userId) {
+  // Implement your logic to fetch the expo push token for the user from the database
+  // Example: const user = await User.findById(userId);
+  // return user ? user.expoPushToken : null;
+}
+
+
+
+
+
+
  
 app.post('/users/login', async (req, res) => {
     const username = req.body.username;

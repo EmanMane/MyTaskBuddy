@@ -80,7 +80,7 @@ const EditProfile = ({navigation}) => {
             const userId = AsyncStorage.getItem('userId');
           // Send a PUT request to update the user's device information with userId set to null
           await axios.put(`https://my-task-buddy-nu.vercel.app/devices/${expoPushToken}`, {
-            userId: userId
+            userId: null
           });
       
           // Navigate to the Login screen
