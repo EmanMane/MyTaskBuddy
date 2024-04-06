@@ -179,13 +179,13 @@ app.get('/userdetails', async (req, res) => {
 });
 
 // PUT request to update the current user of device (for expo notifications)
-app.put('/devices/:deviceExpoToken/', async (req, res) => {
+app.put('/devices/:deviceExpoToken', async (req, res) => {
   const { deviceExpoToken } = req.params; // This is the expo_token in db
   const { userId } = req.body;
 
   try {
     // Check if the device exists in the database
-    const existingDevice = await client.query('SELECT * FROM devices WHERE expo_token = $1', [deviceExpoToken]);
+    const existingDevice = await client.query('SELECT * FROM devices WHERE "expo_token" = $1', [deviceExpoToken]);
 
     if (existingDevice.rows.length === 0) {
       // If the device doesn't exist, insert a new row with the expo_token and userId
