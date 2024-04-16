@@ -54,6 +54,7 @@ const HomePage = ({ navigation }) => {
       {tasks.map((task) => (
           <TaskCard
             key={task.id}
+            taskId={task.id}
             startTime={task.startTime}
             endTime={task.endTime}
             activity={task.activity}
@@ -71,6 +72,7 @@ const HomePage = ({ navigation }) => {
                 parentId: task.parentId
               })
             }
+            help={task.help}
           />
         ))}
       </ScrollView>

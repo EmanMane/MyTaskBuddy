@@ -1,16 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from 'react-native';
 import ProgressBar from './ProgressBar';
+
+import axios from 'axios'; 
 
 const formatTime = (time) => {
   const [hours, minutes] = time.split(':');
   return `${hours}:${minutes}`;
 };
 
-const TaskCard = ({ startTime, endTime, activity, progress, location, onPress, priority }) => {
+const TaskCard = ({ taskId, startTime, endTime, activity, progress, location, onPress, priority , help}) => {
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
 
+  const [isHelpEnabled, setIsHelpEnabled] = useState(help === 1);
+
+  const handleHelpClick = async () => {
+    try {
+      // Toggle the help value
+      const newHelpValue = isHelpEnabled ? 0 : 1;
+      
+      // Make Axios PUT request to update help value
+      const response = await axios.put(`https://my-task-buddy-nu.vercel.app/tasks/${taskId}/update-help`, {
+        help: newHelpValue,
+      });
+  
+      if (response.status === 200) {
+        setIsHelpEnabled(!isHelpEnabled); // Toggle the state of isHelpEnabled
+      } else {
+        console.error('Failed to update help value');
+        // Handle error as needed
+      }
+    } catch (error) {
+      console.error('Error updating help value:', error);
+      // Handle error as needed
+    }
+  };
   return (
     <View style={styles.card}>
       <TouchableOpacity onPress={onPress}>
@@ -29,6 +54,16 @@ const TaskCard = ({ startTime, endTime, activity, progress, location, onPress, p
         </View>
 
         <ProgressBar progress={progress} />
+
+        {help !== undefined && (
+          <TouchableOpacity
+            style={[styles.helpButton, { opacity: help === 0 ? 0.5 : 1 }]}
+            onPress={handleHelpClick}
+            disabled={help === 0}
+          >
+            <Text style={styles.helpButtonText}>{help ? "Enabled" : "Disabled"}</Text>
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -52,7 +87,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     width: deviceWidth *0.83, // Adjust width based on the device screen width
-    height: deviceHeight *0.18,
+    height: deviceHeight *0.25,
     borderColor: '#C8C8C8',
     borderWidth: 1
   },
@@ -110,6 +145,18 @@ const styles = StyleSheet.create({
   container2: {
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  helpButton: {
+    marginTop: 10,
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  helpButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

@@ -127,7 +127,7 @@ const Login = ({ navigation }) => {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => {
-      console.log('Expo Push Token:', token);
+      //console.log('Expo Push Token:', token);
       setExpoPushToken(token);
     });
 

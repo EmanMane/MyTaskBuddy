@@ -6,31 +6,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-/* import 'react-native-url-polyfill/auto' */
-
-
-/* import { createClient } from '@supabase/supabase-js' */
-
-/* const supabaseUrl = process.env.SUPABASE_URL
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-const changes = supabase
-  .channel('table-filter-changes')
-  .on(
-    'postgres_changes',
-    {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'tasks',
-      filter: 'userId=eq.2',
-    },
-    (payload) => console.log(payload)
-  )
-  .subscribe() */
-
-
-
 // Define webhook endpoint
 app.post('/tasksInsert', async (req, res) => {
   try {
@@ -67,8 +42,8 @@ async function sendPushNotificationToUser(userId, activity) {
       // Construct the message
       const message = {
         sound: 'default',
-        title: 'New Task',
-        body: `You have a new task: ${activity}`,
+        title: 'Novi Zadatak',
+        body: `Imate novi zadatak: ${activity}`,
       };
 
       // Send the push notification to each expo push token
@@ -89,7 +64,6 @@ async function sendPushNotificationToUser(userId, activity) {
 async function getExpoPushTokens(userId) {
   try {
     // Query the database to fetch all expo push tokens associated with the user ID
-    // Replace this with your actual database query
     const result = await client.query('SELECT expo_token FROM devices WHERE "userId" = $1', [userId]);
 
     // Extract expo push tokens from the query result
@@ -123,20 +97,6 @@ async function sendPushNotification(expoPushToken, message) {
   }
 }
 
-
-// Function to fetch expo push token from the database
-async function getExpoPushToken(userId) {
-  // Implement your logic to fetch the expo push token for the user from the database
-  // Example: const user = await User.findById(userId);
-  // return user ? user.expoPushToken : null;
-}
-
-
-
-
-
-
- 
 app.post('/users/login', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -407,7 +367,22 @@ app.put('/tasks/:taskId/update-userEndTime', async (req, res) => {
   }
 });
 
+app.put('/tasks/:taskId/update-help', async (req, res) => {
+  const { taskId } = req.params;
+  const { help } = req.body;
 
+  try {
+    // Update the status and userStartTime of the task in the tasks table
+    const query = 'UPDATE tasks SET help = $1 WHERE id = $2';
+    const values = [help, taskId];
+    await client.query(query, values);
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error('Error updating task help:', error);
+    res.sendStatus(500);
+  }
+});
 
 app.put('/tasks/update-progress/:taskId', async (req, res) => {
   const { taskId } = req.params;
@@ -484,7 +459,7 @@ app.get('/parents/:parentId', async (req, res) => {
   }
 });
 
-// Ugasiti prilikom pusha
+// Lokalno pokretanje (Vercel zanemaruje ovaj dio)
 app.listen(3000, ()=>{
   console.log("Server is now listening at port 3000");
 }) 
