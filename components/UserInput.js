@@ -24,7 +24,7 @@ const UserInput = ({ name, value, setValue, secureTextEntry, autoCapitalize }) =
             onPress={() => setShowPassword(!showPassword)}
           >
             <Ionicons
-              name={showPassword ? 'md-eye-off' : 'md-eye'}
+              name={showPassword ? 'eye-off' : 'eye'}
               size={24}
               color="#a6a6a6"
             />

@@ -55,15 +55,17 @@ const TaskCard = ({ taskId, startTime, endTime, activity, progress, location, on
 
         <ProgressBar progress={progress} />
 
-        {help !== undefined && (
-          <TouchableOpacity
-            style={[styles.helpButton, { opacity: help === 0 ? 0.5 : 1 }]}
-            onPress={handleHelpClick}
-            disabled={help === 0}
-          >
-            <Text style={styles.helpButtonText}>{help ? "Enabled" : "Disabled"}</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.buttonContainer}>
+          <Text style={styles.helpText}>Da li vam je potrebna pomoć sa ovim zadatkom?</Text>
+          {help !== undefined && (
+            <TouchableOpacity
+              style={[styles.helpButton, { opacity: help === 0 ? 0.7 : 1 }]}
+              onPress={handleHelpClick}
+            >
+              <Text style={styles.helpButtonText}>{isHelpEnabled ? "   DA   " : "   NE   "}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -146,10 +148,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: deviceWidth*0.55, // Fixed width for the container, adjust as needed
+    marginTop: 10, // Add margin to separate from other elements
+  },
+  helpText: {
+    marginRight: 10, // Add some margin for separation from the button
+  },
   helpButton: {
-    marginTop: 10,
     backgroundColor: '#007bff',
-    padding: 10,
+    paddingVertical: 10, // Vertical padding to give height to the button
+    paddingHorizontal: 15, // Horizontal padding to give width to the button
     borderRadius: 5,
     alignItems: 'center',
   },

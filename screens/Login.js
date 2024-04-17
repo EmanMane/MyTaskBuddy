@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Platform } from "react-native";
 import Text from '@kaloraat/react-native-text';
 import UserInput from "../components/UserInput";
 import axios from 'axios';
