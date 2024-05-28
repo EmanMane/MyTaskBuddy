@@ -205,7 +205,7 @@ app.get('/completed-tasks', async (req, res) => {
     const completedTasks = parseInt(countResult.rows[0].count, 10);
 
     // Update the completed_tasks field in the users table
-    const updateQuery = 'UPDATE users SET completed_tasks = $1 WHERE "userId" = $2 RETURNING completed_tasks';
+    const updateQuery = 'UPDATE users SET completed_tasks = $1 WHERE "id" = $2 RETURNING completed_tasks';
     const updateValues = [completedTasks, userId];
     const updateResult = await client.query(updateQuery, updateValues);
 
