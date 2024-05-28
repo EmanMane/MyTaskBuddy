@@ -192,6 +192,33 @@ app.get('/tasks', async (req, res) => {
   }
 });
 
+// Dohvacanje kompletiranih zadataka na osnovu usera (za medalje)
+app.get('/completed-tasks', async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    // First, count the number of completed tasks for the user
+    const countQuery = 'SELECT COUNT(*) FROM tasks WHERE "userId" = $1 AND "status" = 2';
+    const countValues = [userId];
+    const countResult = await client.query(countQuery, countValues);
+
+    const completedTasks = parseInt(countResult.rows[0].count, 10);
+
+    // Update the completed_tasks field in the users table
+    const updateQuery = 'UPDATE users SET completed_tasks = $1 WHERE "userId" = $2 RETURNING completed_tasks';
+    const updateValues = [completedTasks, userId];
+    const updateResult = await client.query(updateQuery, updateValues);
+
+    // Get the updated completed_tasks value
+    const updatedCompletedTasks = updateResult.rows[0].completed_tasks;
+
+    res.json({ completed_tasks: updatedCompletedTasks });
+  } catch (error) {
+    console.error('Error fetching tasks:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.get('/userdetails', async (req, res) => {
   try {
     const { userId } = req.query;
