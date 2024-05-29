@@ -202,17 +202,7 @@ app.get('/completed-tasks', async (req, res) => {
     const countValues = [userId];
     const countResult = await client.query(countQuery, countValues);
 
-    const completedTasks = parseInt(countResult.rows[0].count, 10);
-
-    // Update the completed_tasks field in the users table
-    const updateQuery = 'UPDATE users SET completed_tasks = $1 WHERE "id" = $2 RETURNING completed_tasks';
-    const updateValues = [completedTasks, userId];
-    const updateResult = await client.query(updateQuery, updateValues);
-
-    // Get the updated completed_tasks value
-    const updatedCompletedTasks = updateResult.rows[0].completed_tasks;
-
-    res.json({ completed_tasks: updatedCompletedTasks });
+    res.json({ completed_tasks: countResult.rows[0].count });
   } catch (error) {
     console.error('Error fetching tasks:', error);
     res.status(500).json({ error: 'Internal Server Error' });
