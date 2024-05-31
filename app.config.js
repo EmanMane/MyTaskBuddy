@@ -1,10 +1,10 @@
 export default {
-    name: "my-task-buddy",
+    name: "MyTaskBuddy",
     slug: "mytaskbuddy",
     version: "1.0.0",
     sdkVersion: "50.0.0",
     orientation: "portrait",
-    icon: "./assets/icon.png",
+    icon: "./assets/logo.png",
     userInterfaceStyle: "light",
     splash: {
         image: "./assets/splash.png",
@@ -24,6 +24,7 @@ export default {
             backgroundColor: "#ffffff"
         },
         package: "com.emanmane.mytaskbuddy",
+        permissions: ["android.permission.HIGH_SAMPLING_RATE_SENSORS"]
     },
     plugins: ["@react-native-google-signin/google-signin"],
     web: {

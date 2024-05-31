@@ -1,6 +1,5 @@
 import React, { useState,useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Login from './Login';
 import axios from 'axios';
 import {
     View,
@@ -9,17 +8,51 @@ import {
     Image,
     TextInput,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
+    Button,
+    ScrollView 
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import KeyboardAvoidingWrapper from '../components/KeyboardAvoidingWrapper';
 
-import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
-import GoogleFit, { Scopes } from 'react-native-google-fit'; 
+import { Pedometer } from 'expo-sensors';
 
 const { width, height } = Dimensions.get('window');
 
+const imagePaths = {
+    b1: require('../assets/rewards/b1.png'),
+    b2: require('../assets/rewards/b2.png'),
+    b3: require('../assets/rewards/b3.png'),
+    b4: require('../assets/rewards/b4.png'),
+    b5: require('../assets/rewards/b5.png'),
+    b6: require('../assets/rewards/b6.png'),
+    s1: require('../assets/rewards/s1.png'),
+    s2: require('../assets/rewards/s2.png'),
+    s3: require('../assets/rewards/s3.png'),
+    s4: require('../assets/rewards/s4.png'),
+    s5: require('../assets/rewards/s5.png'),
+    s6: require('../assets/rewards/s6.png'),
+    g1: require('../assets/rewards/g1.png'),
+    g2: require('../assets/rewards/g2.png'),
+    g3: require('../assets/rewards/g3.png'),
+    g4: require('../assets/rewards/g4.png'),
+    g5: require('../assets/rewards/g5.png'),
+    g6: require('../assets/rewards/g6.png'),
+    p1: require('../assets/rewards/p1.png'),
+    p2: require('../assets/rewards/p2.png'),
+    p3: require('../assets/rewards/p3.png'),
+    p4: require('../assets/rewards/p4.png'),
+    p5: require('../assets/rewards/p5.png'),
+    p6: require('../assets/rewards/p6.png'),
+  };
+  
+
 const EditProfile = ({navigation}) => {
+/*     const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+    const [pastStepCount, setPastStepCount] = useState(0);
+    const [currentStepCount, setCurrentStepCount] = useState(0); */
+
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
@@ -27,65 +60,124 @@ const EditProfile = ({navigation}) => {
     const [avatar, setAvatar] = useState('');
     const [expoPushToken, setExpoPushToken] = useState('');
 
-/*     const [stepCount, setStepCount] = useState(null);
-    const [googleLoggedIn, setGoogleLoggedIn] = useState(false);
-    useEffect(() => {
-        GoogleSignin.configure({
-            scopes: ['https://www.googleapis.com/auth/fitness.activity.read'],
-            webClientId: '992301372973-k3i9klmabi08oc9lto0a39uc9neqirtn.apps.googleusercontent.com',
-        });
-    }, []);
-
-    const handleGoogleSignIn = async () => {
+    const [completedTasks, setCompletedTasks] = useState(0);
+    const [bronzeLevel, setBronzeLevel] = useState(0);
+    const [silverLevel, setSilverLevel] = useState(0);
+    const [goldLevel, setGoldLevel] = useState(0);
+    const [platinumLevel, setPlatinumLevel] = useState(0);
+    
+    const fetchCompletedTasks = async (userId) => {
         try {
-            await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
-            setGoogleLoggedIn(true);
-
-            const today = new Date();
-            const endTime = today.getTime(); // Current time
-            const startTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0).getTime(); // Midnight of the current day
-
-            const result = await GoogleFit.getDailyStepCountSamples(startTime, endTime);
-            setStepCount(result);
+            const response = await fetch(`https://my-task-buddy-nu.vercel.app/completed-tasks?userId=${userId}`);
+            const data = await response.json();
+            if (data !== null && data !== undefined) {
+                //console.log("completed_tasks:", data.completed_tasks);
+                return data.completed_tasks;
+            } else {
+                return 0;
+            }
         } catch (error) {
-            console.error('Google sign-in error:', error);
+            console.error('Error fetching completed tasks:', error);
+            return 0;
         }
     };
- */
+    
+
+    const calculateRewards = (completedTasks) => {
+        // Izračunajte broj svake vrste medalje na osnovu broja završenih zadataka
+    
+        // Prva bronzana medalja svakih 5 zadataka
+        const bronzeCount = Math.floor(completedTasks / 5);
+
+        // Prva srebrna medalja svakih 5 zadataka nakon što nestane bronzanih
+        const silverCount = Math.floor((completedTasks - 30) / 5);
+
+        // Prva zlatna medalja svakih 5 zadataka nakon što nestane srebrnih
+        const goldCount = Math.floor((completedTasks - 60) / 5);
+
+        // Prva platinum medalja svakih 5 zadataka nakon što nestane zlatnih
+        const platinumCount = Math.floor((completedTasks - 90) / 5);
+    
+        // Postavljanje stanja nivoa medalja
+        setBronzeLevel(bronzeCount > 6 ? 6 : bronzeCount); 
+        setSilverLevel(silverCount > 6 ? 6 : silverCount); 
+        setGoldLevel(goldCount > 6 ? 6 : goldCount); 
+        setPlatinumLevel(platinumCount > 6 ? 6 : platinumCount);
+    };
+    
+
+
 
     // Fetch user details
-  const fetchUserDetails = async () => {
-    try {
-      // Logged user ID
-      const userId = await AsyncStorage.getItem('userId');
-      const token = await AsyncStorage.getItem('expoPushToken');
-      setExpoPushToken(token);
-      
+    const fetchUserDetails = async () => {
+        try {
+        // Logged user ID
+        const userId = await AsyncStorage.getItem('userId');
+        const token = await AsyncStorage.getItem('expoPushToken');
+        setExpoPushToken(token);
+        
 
-      // Make a request to your API to fetch details based on the user ID
-      const response = await fetch(`https://my-task-buddy-nu.vercel.app/userdetails?userId=${userId}`);
-      const data = await response.json();
-
-      console.log(data)
-      // Update fields with the fetched data
-      setAvatar(data.avatar);
-      setUsername(data.username);
-      setPassword(data.password);
-      setFirstName(data.firstname);
-      setLastName(data.lastname);
-
-    } catch (error) {
-      console.error('Error fetching details:', error);
-    }
+        // Make a request to your API to fetch details based on the user ID
+        const response = await fetch(`https://my-task-buddy-nu.vercel.app/userdetails?userId=${userId}`);
+        const data = await response.json();
 
 
-  };
-  useEffect(() => {
-    // Fetch details when the component mounts or when the selected date changes
-    fetchUserDetails();
-    console.log(expoPushToken);
-  }, []);
+
+
+
+        console.log(data)
+        // Update fields with the fetched data
+        setAvatar(data.avatar);
+        setUsername(data.username);
+        setPassword(data.password);
+        setFirstName(data.firstname);
+        setLastName(data.lastname);
+
+        const completedTasksCount = await fetchCompletedTasks(userId);
+        setCompletedTasks(completedTasksCount);
+
+        calculateRewards(completedTasksCount);
+
+        } catch (error) {
+            console.error('Error fetching details:', error);
+        }
+    };
+    
+    const renderMedals = (level, type) => {
+        if (level === 0 && type==="b") {
+            return <Text style={styles.noMedalsText}>Nemate medalja</Text>;
+        } else {
+            const medals = [];
+            for (let i = 1; i <= level; i++) {
+                medals.push(<Image key={`${type}${i}`} source={imagePaths[`${type}${i}`]} style={styles.medal} />);
+            }
+            return medals;
+        }
+    };
+    
+
+    useEffect(() => {
+        // Fetch details when the component mounts or when the selected date changes
+        fetchUserDetails();
+/*         // Funkcija za provjeru dostupnosti pedometra
+        const checkPedometerAvailability = async () => {
+            const isAvailable = await Pedometer.isAvailableAsync();
+            setIsPedometerAvailable(String(isAvailable));
+            if (isAvailable) {
+                // Praćenje koraka u stvarnom vremenu
+                const subscription = Pedometer.watchStepCount(result => {
+                    setCurrentStepCount(result.steps);
+                });
+                return subscription;
+            }
+        };
+        checkPedometerAvailability();
+        return () => {
+            if (subscription) {
+                subscription.remove();
+            }
+        }; */
+    }, []);
 
     
     const handleChanges = async() => {
@@ -107,12 +199,12 @@ const EditProfile = ({navigation}) => {
 
     const handleSwitch = async () => {
         try {
-            const userId = AsyncStorage.getItem('userId');
           // Send a PUT request to update the user's device information with userId set to null
           await axios.put(`https://my-task-buddy-nu.vercel.app/devices/${expoPushToken}`, {
             userId: null
           });
-      
+          await AsyncStorage.removeItem('username');
+          await AsyncStorage.removeItem('password');
           // Navigate to the Login screen
           navigation.navigate('Login');
         } catch (error) {
@@ -122,20 +214,18 @@ const EditProfile = ({navigation}) => {
       };
       
 
-    return (
+      return (
         <KeyboardAvoidingWrapper>
-            <View style={styles.main}>
+            <ScrollView contentContainerStyle={styles.main}>
                 <View style={styles.container}>
                     <Text style={styles.headingEdit}>Uredi profil</Text>
                 </View>
                 <View style={styles.userData}>
                     {avatar ? (
-                        <Image
-                            source={{ uri: avatar }}
-                            style={styles.image}
-                        />
+                        <Image source={{ uri: avatar }} style={styles.image} />
                     ) : null}
                     <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
+{/*                 <Text style={styles.name}>Broj koraka danas: {currentStepCount}</Text> */}     
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>
                             <Icon name="user" size={width * 0.045} color="#2CB237" /> Novo korisničko ime
@@ -161,34 +251,26 @@ const EditProfile = ({navigation}) => {
                         <TouchableOpacity style={styles.button} onPress={handleChanges}>
                             <Text style={styles.buttonText}>Sačuvaj promjene</Text>
                         </TouchableOpacity>
-                        <View
-                            style={{
-                                borderBottomColor: 'dimgray',
-                                borderBottomWidth: 1,
-                                width: '60%',
-                                alignSelf: 'center'
-                            }} >
+                        <View style={styles.medalsContainer}>
+                            <Text style={styles.medalsTitle}>Vaše medalje:</Text>
+                            <View style={styles.medalsRow}>
+                                {renderMedals(bronzeLevel, 'b')}
+                                {renderMedals(silverLevel, 's')}
+                                {renderMedals(goldLevel, 'g')}
+                                {renderMedals(platinumLevel, 'p')}
+                            </View>
                         </View>
-
                         <TouchableOpacity style={styles.switchProfile} onPress={handleSwitch}>
                             <Text style={styles.switchProfileText}>Prijavi se s drugog računa</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
-            </View>
+                </View>                       
+
+            </ScrollView>
         </KeyboardAvoidingWrapper>
     );
 };
-/* {googleLoggedIn ? (
-    <Text>Step count: {stepCount}</Text>
-) : (
-    <GoogleSigninButton
-        style={{ width: 192, height: 48 }}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
-        onPress={handleGoogleSignIn}
-    />
-)}  */
+
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
@@ -231,7 +313,7 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f2f2f2',
         borderTopRightRadius: 100,
-        height: '65%',
+        height: '100%',
         borderColor: '#d9d9d9',
         borderTopLeftRadius: 100,
         borderWidth: 1,
@@ -276,7 +358,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderWidth: 1,
         borderColor: 'darkgray',
-        marginBottom: 20
+        marginBottom: 0
     },
     buttonText: {
         color: '#333',
@@ -329,7 +411,37 @@ const styles = StyleSheet.create({
     main: {
         backgroundColor: 'white',
         height: '100%'
-    }
+    },
+    medalsContainer: {
+        width: '100%',
+        alignItems: 'left',
+        marginVertical: 30,
+    },
+    medalsTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    medalsRow: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+    },
+    medal: {
+        width: 50,
+        height: 50,
+        margin: 2,
+        marginRight: 5, 
+        marginBottom: 0
+    },
+    noMedalsText: {
+        fontSize: 18,
+        fontStyle: 'italic',
+        color: 'red',
+        marginTop: 10,
+    },    
 });
 
 export default EditProfile;

@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet,Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import Toast from 'react-native-toast-message';
+
+const messages = [
+  "Bravo! Idemo na naredni korak!",
+  "Odlično! Nastavi tako!",
+  "Svaka čast! Sljedeći korak te čeka!",
+  "Super! Nastavi dalje!",
+  "Fantastično! Idemo dalje!"
+];
 
 const { width, height } = Dimensions.get('window');
 
@@ -109,8 +118,19 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
     if (currentStepId) {
       await updateStepStatus(currentStepId);
       setCurrentStep((prevStep) => prevStep + 1);
+      showMessage(); // Prikazivanje poruke
     }
   };
+
+  const showMessage = () => {
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    Toast.show({
+      type: 'success',
+      text1: randomMessage,
+      position: 'bottom'
+    });
+  };
+  
 
   const renderStepButton = (stepNumber, stepStatus) => {
     const isCurrentStep = currentStep === stepNumber;
@@ -189,6 +209,7 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
       {steps.map((step, index) =>
         renderStepCard(index + 1, step.stepName, step.description, index, step.status)
       )}
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </View>
   );
 };

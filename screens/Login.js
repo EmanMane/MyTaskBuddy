@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Platform } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Platform, ActivityIndicator } from "react-native";
 import Text from '@kaloraat/react-native-text';
 import UserInput from "../components/UserInput";
 import axios from 'axios';
@@ -24,27 +24,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-// Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
-async function sendPushNotification(expoPushToken) {
-  const message = {
-    to: expoPushToken,
-    sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
-    data: { someData: 'goes here' },
-  };
-
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
-}
 
 async function registerForPushNotificationsAsync() {
   let token;
@@ -80,12 +59,45 @@ async function registerForPushNotificationsAsync() {
   return token.data;
 }
 
+async function loginWithStoredCredentials(username, password, navigation) {
+  try {
+    const responseLogin = await axios.post('https://my-task-buddy-nu.vercel.app/users/login', {
+      username: username,
+      password: password,
+    });
+    if (responseLogin.status === 200) {
+      // Logged in successfully
+      // Extract the user ID from the response
+      const userId = responseLogin.data.userId;
+      navigation.navigate('HomePage');
+    }
+  } catch (error) {
+    console.error('Error logging in with stored credentials:', error);
+  }
+}
 
 const Login = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    async function checkStoredCredentials() {
+      try {
+        const storedUsername = await AsyncStorage.getItem('username');
+        const storedPassword = await AsyncStorage.getItem('password');
+        if (storedUsername && storedPassword) {
+          // Stored credentials found, attempt login
+          await loginWithStoredCredentials(storedUsername, storedPassword, navigation);
+        }
+        setIsLoading(false); // Set loading state to false after checking stored credentials
+      } catch (error) {
+        console.error('Error retrieving stored credentials:', error);
+      }
+    }
+    checkStoredCredentials();
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -106,6 +118,8 @@ const Login = ({ navigation }) => {
         // Store the user ID locally
         await AsyncStorage.setItem('userId', userId);
         await AsyncStorage.setItem('expoPushToken', expoPushToken);
+        await AsyncStorage.setItem('username', username);
+        await AsyncStorage.setItem('password', password);
         navigation.navigate('HomePage');
       }
     } catch (error) {
@@ -143,7 +157,13 @@ const Login = ({ navigation }) => {
     };
   }, []);
 
-
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
   return (
     <KeyboardAvoidingWrapper>
       <View style={styles.container}>
@@ -151,7 +171,7 @@ const Login = ({ navigation }) => {
           <Image source={require("../assets/logo.png")} style={styles.image}></Image>
           <Text style={styles.textLogin} dark bold>Prijava</Text>
           <Text style={styles.subtitle} >Prijavi se da nastaviš.</Text>
-          <UserInput name="KORISNIČKO IME" value={username} setValue={setUsername}></UserInput>
+          <UserInput name="KORISNIČKOKO IME" value={username} setValue={setUsername}></UserInput>
           <UserInput name="LOZINKA" value={password} setValue={setPassword} secureTextEntry={true}></UserInput>
           {message ? (
         <Text style={styles.message}>{message}</Text>
