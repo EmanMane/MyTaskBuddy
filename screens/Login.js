@@ -171,7 +171,7 @@ const Login = ({ navigation }) => {
           <Image source={require("../assets/logo.png")} style={styles.image}></Image>
           <Text style={styles.textLogin} dark bold>Prijava</Text>
           <Text style={styles.subtitle} >Prijavi se da nastaviš.</Text>
-          <UserInput name="KORISNIČKOKO IME" value={username} setValue={setUsername}></UserInput>
+          <UserInput name="KORISNIČKO IME" value={username} setValue={setUsername}></UserInput>
           <UserInput name="LOZINKA" value={password} setValue={setPassword} secureTextEntry={true}></UserInput>
           {message ? (
         <Text style={styles.message}>{message}</Text>

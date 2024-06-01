@@ -32,7 +32,14 @@ const HomePage = ({ navigation }) => {
       const sortedTasks = data.sort((a, b) => {
         const timeA = moment(a.startTime, 'HH:mm:ss');
         const timeB = moment(b.startTime, 'HH:mm:ss');
-        return timeA.diff(timeB);
+        const timeDiff = timeA.diff(timeB);
+
+        // If startTime is the same, sort by activity alphabetically
+        if (timeDiff === 0) {
+          return a.activity.localeCompare(b.activity);
+        }
+
+        return timeDiff;
       });
 
       // Update the tasks state with the sorted data
@@ -65,7 +72,7 @@ const HomePage = ({ navigation }) => {
               navigation.navigate('Task', {
                 taskId: task.id,
                 activityName: task.activity,
-                date: selectedDate.toString(),
+                date: selectedDate.format('YYYY-MM-DD'),
                 startTime: task.startTime,
                 endTime: task.endTime,
                 location: task.location,
@@ -73,6 +80,7 @@ const HomePage = ({ navigation }) => {
               })
             }
             help={task.help}
+            date={selectedDate.format('YYYY-MM-DD')}
           />
         ))}
       </ScrollView>

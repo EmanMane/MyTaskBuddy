@@ -20,11 +20,11 @@ export default {
     android: {
         googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
         adaptiveIcon: {
-            foregroundImage: "./assets/adaptive-icon.png",
+            foregroundImage: "./assets/logo.png",
             backgroundColor: "#ffffff"
         },
         package: "com.emanmane.mytaskbuddy",
-        permissions: ["android.permission.HIGH_SAMPLING_RATE_SENSORS"]
+        permissions: ["READ_CALENDAR", "WRITE_CALENDAR"]
     },
     plugins: ["@react-native-google-signin/google-signin"],
     web: {
