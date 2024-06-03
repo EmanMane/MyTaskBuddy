@@ -33,6 +33,12 @@ const addEventToCalendar = async (taskDetails) => {
     endDate: taskDetails.endTime,
     timeZone: 'CET',
     location: taskDetails.location,
+    alarms: [
+      {
+        relativeOffset: -30, // Alert 30 minutes before the event starts
+        method: Calendar.AlarmMethod.ALERT,
+      },
+    ],
   };
 
   try {
