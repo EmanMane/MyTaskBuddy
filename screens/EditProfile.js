@@ -15,8 +15,6 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import KeyboardAvoidingWrapper from '../components/KeyboardAvoidingWrapper';
 
-import { Pedometer } from 'expo-sensors';
-
 const { width, height } = Dimensions.get('window');
 
 const imagePaths = {
@@ -48,11 +46,6 @@ const imagePaths = {
   
 
 const EditProfile = ({navigation}) => {
-/*     const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
-    const [pastStepCount, setPastStepCount] = useState(0);
-    const [currentStepCount, setCurrentStepCount] = useState(0); */
-
-
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
@@ -116,16 +109,10 @@ const EditProfile = ({navigation}) => {
         const token = await AsyncStorage.getItem('expoPushToken');
         setExpoPushToken(token);
         
-
         // Make a request to your API to fetch details based on the user ID
         const response = await fetch(`https://my-task-buddy-nu.vercel.app/userdetails?userId=${userId}`);
         const data = await response.json();
 
-
-
-
-
-        console.log(data)
         // Update fields with the fetched data
         setAvatar(data.avatar);
         setUsername(data.username);
@@ -157,27 +144,12 @@ const EditProfile = ({navigation}) => {
     
 
     useEffect(() => {
-        // Fetch details when the component mounts or when the selected date changes
-        fetchUserDetails();
-/*         // Funkcija za provjeru dostupnosti pedometra
-        const checkPedometerAvailability = async () => {
-            const isAvailable = await Pedometer.isAvailableAsync();
-            setIsPedometerAvailable(String(isAvailable));
-            if (isAvailable) {
-                // Praćenje koraka u stvarnom vremenu
-                const subscription = Pedometer.watchStepCount(result => {
-                    setCurrentStepCount(result.steps);
-                });
-                return subscription;
-            }
-        };
-        checkPedometerAvailability();
-        return () => {
-            if (subscription) {
-                subscription.remove();
-            }
-        }; */
-    }, []);
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchUserDetails();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
 
     
     const handleChanges = async() => {
@@ -214,7 +186,7 @@ const EditProfile = ({navigation}) => {
       };
       
 
-      return (
+    return (
         <KeyboardAvoidingWrapper>
             <ScrollView contentContainerStyle={styles.main}>
                 <View style={styles.container}>
@@ -225,7 +197,6 @@ const EditProfile = ({navigation}) => {
                         <Image source={{ uri: avatar }} style={styles.image} />
                     ) : null}
                     <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
-{/*                 <Text style={styles.name}>Broj koraka danas: {currentStepCount}</Text> */}     
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>
                             <Icon name="user" size={width * 0.045} color="#2CB237" /> Novo korisničko ime

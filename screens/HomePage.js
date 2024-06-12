@@ -76,7 +76,8 @@ const HomePage = ({ navigation }) => {
                 startTime: task.startTime,
                 endTime: task.endTime,
                 location: task.location,
-                parentId: task.parentId
+                parentId: task.parentId,
+                userId: task.userId,
               })
             }
             help={task.help}

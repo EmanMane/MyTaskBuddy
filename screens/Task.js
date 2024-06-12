@@ -22,7 +22,7 @@ const formatTime = (time) => {
 const { width, height } = Dimensions.get('window');
 
 const Task = ({ route, navigation }) => {
-  const { taskId, activityName, date, startTime, endTime, location, parentId } = route.params; // getting the activity name from the route params
+  const { userId, taskId, activityName, date, startTime, endTime, location, parentId } = route.params; // getting the activity name from the route params
   const [firstName, setFirstName] = useState('');
   const [status, setStatus] = useState(0);
   const [isWhiteContainerVisible, setIsWhiteContainerVisible] = useState(false);
@@ -220,7 +220,7 @@ const Task = ({ route, navigation }) => {
           ]}
         >
           <ScrollView>
-            <StepsComponent taskId={taskId} onLastStepComplete={() => setAnimateEmoji2(true)} />
+            <StepsComponent userId={userId} taskId={taskId} onLastStepComplete={() => setAnimateEmoji2(true)} />
           </ScrollView>
         </Animated.View>
       ) : (
@@ -318,7 +318,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: width * 0.2,
     borderTopRightRadius: width * 0.2,
     marginTop: height * 0.01,
-    marginBottom: height * 0.01,
   },
   lets: {
     fontSize: width*0.035,

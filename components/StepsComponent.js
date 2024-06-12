@@ -13,9 +13,10 @@ const messages = [
 
 const { width, height } = Dimensions.get('window');
 
-const StepsComponent = ({ taskId, onLastStepComplete }) => {
+const StepsComponent = ({ userId, taskId, onLastStepComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [steps, setSteps] = useState([]);
+  const [showMedalMessage, setShowMedalMessage] = useState(true); // Dodajemo state za praćenje prikaza poruke o novoj medalji
 
   const updateTaskStatus = async (taskId, status) => {
     try {
@@ -105,6 +106,16 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
         setCurrentStep(firstIncompleteStepIndex + 1);
 
         setSteps(substeps);
+
+        const responseCompletedTasks = await fetch(`https://my-task-buddy-nu.vercel.app/completed-tasks?userId=${userId}`);
+        const dataCompletedTasks = await responseCompletedTasks.json();
+    
+        if (dataCompletedTasks.completed_tasks % 5 === 0) {
+          setShowMedalMessage(false);
+        }
+        else{
+          setShowMedalMessage(true);
+        }
       } catch (error) {
         console.error('Error fetching substeps:', error);
       }
@@ -122,13 +133,28 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
     }
   };
 
-  const showMessage = () => {
+  const showMessage = async () => {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    Toast.show({
-      type: 'success',
-      text1: randomMessage,
-      position: 'bottom'
-    });
+    // Check if the total number of completed tasks is divisible by 5
+    const response = await fetch(`https://my-task-buddy-nu.vercel.app/completed-tasks?userId=${userId}`);
+    const data = await response.json();
+
+    if (data.completed_tasks % 5 === 0 && showMedalMessage===true) {
+      Toast.show({
+        type: 'success',
+        text1: 'Dobili ste novu medalju!'
+      });
+    } else {
+      Toast.show({
+        type: 'success',
+        text1: randomMessage
+      });
+    }
+  
+    // Automatsko skrivanje poruke nakon 2 sec
+    setTimeout(() => {
+      Toast.hide();
+    }, 2000);
   };
   
 
@@ -209,9 +235,20 @@ const StepsComponent = ({ taskId, onLastStepComplete }) => {
       {steps.map((step, index) =>
         renderStepCard(index + 1, step.stepName, step.description, index, step.status)
       )}
-      <Toast ref={(ref) => Toast.setRef(ref)} />
+    <Toast
+      ref={(ref) => Toast.setRef(ref)}
+      config={{
+        success: ({ text1 }) => (
+          <View style={{ backgroundColor: '#00b386', padding: 16, borderRadius: 25, opacity: 0.9, position: 'absolute', top: 400 }}>
+          <Text style={{ color: '#ffffff', fontSize: 16 }}>{text1}</Text>
+        </View>
+        ),
+      }}
+    />
+
     </View>
   );
+  
 };
 const stepCardPadding = width * 0.05;
 const stepCardMarginHorizontal = width * 0.1;
@@ -222,6 +259,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: width * 0.04,
     paddingTop: height * 0.03,
+    height: height* 0.7,
   },
   stepCard: {
     flexDirection: 'row',

@@ -35,7 +35,7 @@ const addEventToCalendar = async (taskDetails) => {
     location: taskDetails.location,
     alarms: [
       {
-        relativeOffset: -30, // Alert 30 minutes before the event starts
+        relativeOffset: -10, // Alert 10 minutes before the event starts
         method: Calendar.AlarmMethod.ALERT,
       },
     ],
@@ -93,14 +93,27 @@ const TaskCard = ({ taskId, startTime, endTime, activity, progress, location, on
   const [isEventAdded, setIsEventAdded] = useState(false);
 
   useEffect(() => {
-    const checkEvent = async () => {
+    const checkAndAddEvent = async () => {
       const startTaskDate = moment(date).startOf('day').set({ hour: startTime.split(':')[0], minute: startTime.split(':')[1], second: 0 }).toDate();
       const endTaskDate = moment(date).startOf('day').set({ hour: endTime.split(':')[0], minute: endTime.split(':')[1], second: 0 }).toDate();
       const eventExists = await checkIfEventExists({ activity, startTime: startTaskDate, endTime: endTaskDate });
-      setIsEventAdded(eventExists);
+      
+      if (!eventExists) {
+        const eventAdded = await addEventToCalendar({
+          startTime: startTaskDate,
+          endTime: endTaskDate,
+          activity,
+          location,
+          date
+        });
+        
+        setIsEventAdded(eventAdded);
+      } else {
+        setIsEventAdded(true);
+      }
     };
 
-    checkEvent();
+    checkAndAddEvent();
   }, []);
 
   const handleHelpClick = async () => {
@@ -117,23 +130,6 @@ const TaskCard = ({ taskId, startTime, endTime, activity, progress, location, on
       }
     } catch (error) {
       console.error('Error updating help value:', error);
-    }
-  };
-
-  const handleAddEventClick = async () => {
-    const startTaskDate = moment(date).startOf('day').set({ hour: startTime.split(':')[0], minute: startTime.split(':')[1], second: 0 }).toDate();
-    const endTaskDate = moment(date).startOf('day').set({ hour: endTime.split(':')[0], minute: endTime.split(':')[1], second: 0 }).toDate();
-
-    const eventAdded = await addEventToCalendar({
-      startTime: startTaskDate,
-      endTime: endTaskDate,
-      activity,
-      location,
-      date
-    });
-
-    if (eventAdded) {
-      setIsEventAdded(true);
     }
   };
 
@@ -155,7 +151,7 @@ const TaskCard = ({ taskId, startTime, endTime, activity, progress, location, on
         </View>
         <ProgressBar progress={progress} />
         <View style={styles.buttonContainer}>
-          <Text style={styles.helpText}>Da li vam je potrebna pomoć sa ovim zadatkom?</Text>
+          <Text style={styles.helpText}>Potrebna pomoć?</Text>
           {help !== undefined && (
             <TouchableOpacity
               style={[styles.helpButton, { opacity: help === 0 ? 0.7 : 1 }]}
@@ -165,15 +161,6 @@ const TaskCard = ({ taskId, startTime, endTime, activity, progress, location, on
             </TouchableOpacity>
           )}
         </View>
-        <TouchableOpacity 
-          style={[styles.calendarButton, { opacity: isEventAdded ? 0.7 : 1 }]} 
-          onPress={handleAddEventClick} 
-          disabled={isEventAdded}
-        >
-          <Text style={styles.calendarButtonText}>
-            {isEventAdded ? "DODANO U KALENDAR" : "DODAJ U KALENDAR"}
-          </Text>
-        </TouchableOpacity>
       </TouchableOpacity>
     </View>
   );
@@ -194,7 +181,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     width: deviceWidth * 0.83,
-    height: deviceHeight * 0.3,
+    height: deviceHeight * 0.24,
     borderColor: '#C8C8C8',
     borderWidth: 1,
   },
@@ -256,16 +243,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: deviceWidth * 0.55,
+    width: deviceWidth * 0.65,
     marginTop: 10,
   },
   helpText: {
     marginRight: 10,
+    marginLeft: 20,
   },
   helpButton: {
     backgroundColor: '#007bff',
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 45,
     borderRadius: 5,
     alignItems: 'center',
   },
